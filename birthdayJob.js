@@ -2,6 +2,7 @@
 const CronJob = require('cron').CronJob;
 const nodemailer = require('nodemailer');
 const dataReader = require('./data');
+const dataDBReader = require('./dbData');
 const dataParser = require('./parserData')
 
 const transporter = nodemailer.createTransport({
@@ -24,7 +25,11 @@ function createOptions(data) {
 }
 
 async function sendMail() {
-    const data = await dataReader.readData();
+    // Read data from file
+    // const data = await dataReader.readData();
+
+    // Read data from DB
+    const data = await dataDBReader.readDataFromDB()
     const selectedTargets = dataParser.getSelectedTargets(data);
     for (let i = 0; i < selectedTargets.length; i++) {
         const mailOptions = createOptions(selectedTargets[i]);
