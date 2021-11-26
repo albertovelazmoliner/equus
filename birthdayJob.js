@@ -5,6 +5,13 @@ const dataReader = require('./data');
 const dataDBReader = require('./dbData');
 const dataParser = require('./parserData')
 
+var accountSid = process.env.TWILIO_ACCOUNT_SID; // Your Account SID from www.twilio.com/console
+var authToken = process.env.TWILIO_AUTH_TOKEN;   // Your Auth Token from www.twilio.com/console
+
+const twilioClient = require('twilio')(accountSid, authToken, {
+  logLevel: 'debug'
+});
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port: 587,
@@ -44,7 +51,26 @@ async function sendMail() {
     }
     
 }
-async function start(){
+
+async function sendSMS() {
+    // Read data from DB
+    const data = await dataDBReader.readSMSDataFromDB()
+    const selectedTargets = dataParser.getSelectedTargetsSMS(data);
+    for (let i = 0; i < selectedTargets.length; i++) {
+        const phone = selectedTargets[i].phone;
+        twilioClient.messages
+            .create({
+                body: `Happy birthday, dear ${selectedTargets[i].first_name}!`,
+                from: process.env.TWILIO_PHONE_NUMBER,
+                to: phone
+            })
+            .then(message => console.log(message.sid));
+    }
+}
+
+
+
+async function startSendMail(){
     console.log('job started');
     // Every day at 8:00 a.m.
     const job = new CronJob('0 0 8 * * *', async function() {
@@ -53,4 +79,14 @@ async function start(){
     job.start();
 }
 
-module.exports.start = start;
+async function startSendSMS(){
+    console.log('job started');
+    // Every day at 8:00 a.m.
+    const job = new CronJob('0 0 8 * * *', async function() {
+        await sendSMS();
+    }, null, true, 'America/Los_Angeles');
+    job.start();
+}
+
+module.exports.startSendMail = startSendMail;
+module.exports.startSendSMS = startSendSMS;
