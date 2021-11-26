@@ -41,7 +41,8 @@ async function sendMail() {
 }
 async function start(){
     console.log('job started');
-    const job = new CronJob('0 */1 * * * *', async function() {
+    // Every day at 8:00 a.m.
+    const job = new CronJob('0 0 8 * * *', async function() {
         await sendMail();
     }, null, true, 'America/Los_Angeles');
     job.start();
