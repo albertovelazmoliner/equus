@@ -4,11 +4,11 @@ async function readDataFromDB() {
     let result = [];
     try {
         const client = new Client({
-            user: 'dbuser',
-            host: 'database.server.com',
-            database: 'mydb',
-            password: 'secretpassword',
-            port: 3211,
+            user: process.env.PGUSER,
+            host: process.env.PGHOST,
+            database: process.env.PGDATABASE,
+            password: process.env.PGPASSWORD,
+            port: process.env.PGPORT,
         });
         await client.connect();
         const res = await client.query('SELECT first_name, email, date_of_birth FROM users');
@@ -24,11 +24,11 @@ async function readSMSDataFromDB() {
     let result = [];
     try {
         const client = new Client({
-            user: 'dbuser',
-            host: 'database.server.com',
-            database: 'mydb',
-            password: 'secretpassword',
-            port: 3211,
+            user: process.env.PGUSER,
+            host: process.env.PGHOST,
+            database: process.env.PGDATABASE,
+            password: process.env.PGPASSWORD,
+            port: process.env.PGPORT,
         });
         await client.connect();
         const res = await client.query('SELECT first_name, phone, date_of_birth FROM users');
